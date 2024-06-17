@@ -2,32 +2,31 @@ import folium
 import json
 import streamlit as st
 from streamlit_folium import st_folium
+import os
+
+
+
 st.set_page_config(layout="wide")
 
-st.markdown("""
-        <style>
-        .block-container {
-            padding-top: 4rem;
-            padding-bottom: 0rem;
-            padding-left: 0rem;
-            padding-right: 0rem;
-        }
-        .main {
-            padding-left: 2rem;
-            padding-right: 4rem;
-        }
-        #map-container {
-            margin-bottom: 0px;
-        }
-    </style>
-        """, unsafe_allow_html=True)
+stat = os.stat("styles.css")
+last_modified_time = stat.st_mtime
+
+
+with open('styles.css') as f:
+    st.markdown(f"<style>{f.read()} </style> ", unsafe_allow_html=True)
+    # file_contents = f.read()
+    # styles = f.read()
 
 
 
-st.markdown('<div id="title-div">', unsafe_allow_html=True)
+if last_modified_time != os.path.getmtime("styles.css"):
+    st.rerun()
+
+
+
 st.title("Lok Sabha 2024 Elections")
 st.caption("Project showcases the general data and stats of the election in an interactive way.")
-st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 col1, col2 = st.columns([1, 0.5],gap="large")

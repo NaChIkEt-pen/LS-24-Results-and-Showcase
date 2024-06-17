@@ -1,0 +1,21 @@
+.block-container {
+    padding-top: 4rem;
+    padding-bottom: 0rem;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+
+.main {
+    padding-left: 2rem;
+    padding-right: 4rem;
+}
+
+#map-container {
+    margin-bottom: 0px;
+}
+
+
+#lok-sabha-2024-elections {
+    color: red;
+    padding-left: 20rem;
+}
