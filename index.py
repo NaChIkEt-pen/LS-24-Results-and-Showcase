@@ -5,6 +5,7 @@ from streamlit_folium import st_folium
 
 st.title("Lok Sabha 2024 Elections")
 st.caption("Project showcases the general data and stats of the election in an interactive way.")
+col1, col2 = st.columns(3)
 
 ######### Map ###############
 # Define the path to your local GeoJSON file
