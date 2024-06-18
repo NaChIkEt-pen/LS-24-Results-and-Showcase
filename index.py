@@ -3,8 +3,31 @@ import json
 import streamlit as st
 from streamlit_folium import st_folium
 import os
+import mysql.connector
+import pandas as pd
+###################### MYSQL CONNECTION ####################
+try:
+    mydb = mysql.connector.connect(
+      host="localhost",
+      user="root",
+      password="nachiket",
+      database="LS2024"
+    )
+    mycursor = mydb.cursor()
+    mycursor.execute('SHOW COLUMNS FROM `maharashtra`;')
+    columns = mycursor.fetchall()
+    column_names = [i[0] for i in mycursor.description]
+    df_cols = pd.DataFrame(columns, columns=column_names)
+    ls_column_names = df_cols['Field'].tolist()
 
-
+    mycursor.execute('SHOW TABLES;')
+    names = mycursor.fetchall()
+    table_names = [i[0] for i in mycursor.description]
+    df_tables = pd.DataFrame(names)
+    df_state_names = df_tables[0].tolist()
+    # print(ls_column_names)
+except:
+    print("Cannot Connect to the Database")
 st.set_page_config(layout="wide")
 
 
@@ -24,7 +47,7 @@ col1, col2 = st.columns([1, 1],gap="large")
 with col1:
     st.subheader("Current Indian political landscape")
     # Define the path to your local GeoJSON file
-    geojson_file_path = 'india_pc_2019.geojson'
+    geojson_file_path = 'india_pc_2024_simplified.geojson'
 
     # Read the GeoJSON data from the file with specified encoding
     with open(geojson_file_path, 'r', encoding='utf-8') as geojson_file:
@@ -76,8 +99,7 @@ with col1:
 with col2:
     st.subheader("State / Counstitunecy wise data")
 
-    option = st.selectbox(
+    option_state = st.selectbox(
     "Select State",
-    ("S1", "S2", "S3"))
-
-    # print(option)
+    df_state_names)
+    print(option_state)
