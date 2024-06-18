@@ -5,11 +5,7 @@ from streamlit_folium import st_folium
 import os
 
 
-
 st.set_page_config(layout="wide")
-
-stat = os.stat("styles.css")
-last_modified_time = stat.st_mtime
 
 
 with open('styles.css') as f:
@@ -18,21 +14,15 @@ with open('styles.css') as f:
     # styles = f.read()
 
 
-
-if last_modified_time != os.path.getmtime("styles.css"):
-    st.rerun()
-
-
-
 st.title("Lok Sabha 2024 Elections")
-st.caption("Project showcases the general data and stats of the election in an interactive way.")
+st.text("Project showcases the general data and stats of the election in an interactive way.")
 
 
-
-col1, col2 = st.columns([1, 0.5],gap="large")
+col1, col2 = st.columns([1, 1],gap="large")
 
 ######### Map ###############
 with col1:
+    st.subheader("Current Indian political landscape")
     # Define the path to your local GeoJSON file
     geojson_file_path = 'india_pc_2019.geojson'
 
@@ -43,7 +33,7 @@ with col1:
     # Create a map object centered at a particular latitude and longitude
     # Adjust the location and zoom level as needed
     m = folium.Map(location=[22.5, 85.0882],
-            zoom_start=4,
+            zoom_start=4.4,
             tiles='',
             attr="India only"
             )
@@ -54,7 +44,12 @@ with col1:
     #                             'weight': 0.1}
 
     # Add the GeoJSON layer to the map  #########  , style_function=style_function
-    g = folium.GeoJson(geojson_data, name="geojson" ).add_to(m)
+    g = folium.GeoJson(geojson_data, name="geojson",style_function=lambda feature: {
+        "fillColor": "#000000",
+        "color": "black ",
+        "weight": 2,
+        "dashArray": "5, 5",
+    }, ).add_to(m)
     m.add_child(folium.LatLngPopup())
 
     # # Add layer control to toggle GeoJSON visibility
@@ -63,10 +58,8 @@ with col1:
     # Save the map to an HTML file
     # m.save('map_with_geojson.html')
 
-    folium.GeoJsonTooltip(fields=["pc_name"],style="background-color: red;").add_to(g)
-    st.markdown('<div id="map-container">', unsafe_allow_html=True)
-    st_data  = st_folium(m,width=500, height=400)
-    st.markdown('</div>', unsafe_allow_html=True)
+    folium.GeoJsonTooltip(fields=["pc_name"]).add_to(g)
+    st_data  = st_folium(m,width=570, height=460)
     # If using Jupyter Notebook, display the map inline
     # m
     def get_pos(lat, lng):
@@ -82,3 +75,9 @@ with col1:
 
 with col2:
     st.subheader("State / Counstitunecy wise data")
+
+    option = st.selectbox(
+    "Select State",
+    ("S1", "S2", "S3"))
+
+    # print(option)
