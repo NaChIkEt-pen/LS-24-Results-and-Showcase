@@ -183,25 +183,42 @@ try:
             st.markdown(""" <p id="pc_caption">Double Click on the field to Expand.</p> """, unsafe_allow_html=True)
             # st.caption("Double Click on the field to Expand.")
 
-            m2 = folium.Map(location=[22.5, 85.0882],
-                            zoom_start=3,
+            df_state_cords = pd.read_csv('state_cords.csv',  encoding='ISO-8859-1')
+            # st.dataframe(df_state_cords)
+
+
+            for index, row in df_state_cords.iterrows():
+                if (row["Name"].replace(" ", "").lower() == option_state.replace(" ","").lower()):
+                    # print(row["Name"].replace(" ", "").lower() == option_state.replace(" ","").lower())
+                    small_state_x = row["Latitude"]
+                    small_state_y = row["Longitude"]
+                    # print(small_state_x, small_state_y)
+            ################### map ##############
+            m2 = folium.Map(location=[small_state_x, small_state_y],
+                            zoom_start=4.7,
                             tiles='',
                             attr="India only"
                             )
 
-            # style_function = lambda x: {'fillColor': '#ffffff', 
-            #                             'color':'#000000', 
-            #                             'fillOpacity': 0.1, 
-            #                             'weight': 0.1}
-
-            # Add the GeoJSON layer to the map  #########  , style_function=style_function
-            g2 = folium.GeoJson(geojson_data, name="geojson2", style_function=lambda feature: {
+            style_function1 =lambda feature: {
                 "fillColor": "#000000",
                 "color": "black ",
                 "weight": 2,
                 "dashArray": "5, 5",
-            }).add_to(m2)
-            m2.add_child(folium.LatLngPopup())
+            }
+            # style_function2 =lambda feature: {
+            #     "fillColor": "orange",
+            #     "color": "black ",
+            #     "weight": 2,
+            #     "dashArray": "5, 5",
+            # }
+            # Add the GeoJSON layer to the map  #########  , style_function=style_function
+#######################
+            # g2 = folium.GeoJson(geojson_data, name="geojson2", style_function= style_function2 if option_state == "andhra pradesh" else style_function1).add_to(m2)
+#######################
+            # print(geojson_data["features"][0])
+            g2 = folium.GeoJson(geojson_data, name="geojson2", style_function = style_function1).add_to(m2)
+            # m2.add_child(folium.LatLngPopup())
 
             # # Add layer control to toggle GeoJSON visibility
             # folium.LayerControl().add_to(m)
@@ -211,7 +228,9 @@ try:
 
             folium.GeoJsonTooltip(fields=["pc_name"]).add_to(g2)
             st_data2 = st_folium(m2, width=200, height=240, key="map2")
-
+            
+            
+            
 except Exception as Argument:
     st.title("Some Unexpected Error Occured")
     print(Argument)
