@@ -1,5 +1,5 @@
 [server]
 runOnSave = true
-port = 8000
+port = 8501
 
 enableCORS = true
