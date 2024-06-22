@@ -195,75 +195,57 @@ try:
                     small_state_y = row["Longitude"]
                     # print(small_state_x, small_state_y)
             ################### map ##############
+            col5, col6 = st.columns([1, 1], gap="small")
+            with col5:
+                st.subheader("State Map")
+                geojson_data2 = load_geojson('india_pc_2024_simplified.geojson')
 
-            geojson_data2 = load_geojson('india_pc_2024_simplified.geojson')
-
-            # for data in geojson_data2["features"]:
-            #     if data["properties"]["st_name"] == "ANDAMAN & NICOBAR":
-            #         print(data["properties"]["st_name"])
-            m2 = folium.Map(location=[small_state_x, small_state_y],
-                            zoom_start=5,
-                            tiles='',
-                            attr="India only"
+                # for data in geojson_data2["features"]:
+                #     if data["properties"]["st_name"] == "ANDAMAN & NICOBAR":
+                #         print(data["properties"]["st_name"])
+                m2 = folium.Map(location=[small_state_x, small_state_y],
+                                zoom_start=5,
+                                tiles='',
+                                attr="India only"
+                                )
+                def style_functions(feature):
+                    if feature["properties"]["st_name"].replace(" ", "").lower() not in  option_state.replace(" ","").lower():
+                        return ({
+                                    "fillColor": "#DDDDDD",
+                                    "color": "black ",
+                                    "weight": 0,
+                                    "dashArray": "5, 5",
+                                    }
                             )
-            def style_functions(feature):
-                if feature["properties"]["st_name"].replace(" ", "").lower() not in  option_state.replace(" ","").lower():
-                    return ({
-                                "fillColor": "#DDDDDD",
-                                "color": "black ",
-                                "weight": 0,
-                                "dashArray": "5, 5",
-                                }
-                        )
-                if feature["properties"]["pc_name"].replace(" ", "").lower()  in option_pc.replace(" ","").lower() and option_pc!="" and feature["properties"]["pc_name"].replace(" ", "").lower() != "": 
-                    return ({
-                                "fillColor": "red",
-                                "color": "black",
-                                "weight": 1,
-                                "dashArray": "5, 5",
-                                }
-                        )
-                else:
-                    return ({
-                                "fillColor": "white",
-                                "color": "black ",
-                                "weight": 1,
-                                "dashArray": "5, 5",
-                                }
+                    if feature["properties"]["pc_name"].replace(" ", "").lower()  in option_pc.replace(" ","").lower() and option_pc!="" and feature["properties"]["pc_name"].replace(" ", "").lower() != "": 
+                        return ({
+                                    "fillColor": "red",
+                                    "color": "black",
+                                    "weight": 1,
+                                    "dashArray": "5, 5",
+                                    }
+                            )
+                    else:
+                        return ({
+                                    "fillColor": "white",
+                                    "color": "black ",
+                                    "weight": 1,
+                                    "dashArray": "5, 5",
+                                    }
                         )
                 
+                g2 = folium.GeoJson(geojson_data2, name="geojson2", style_function = style_functions).add_to(m2)
 
-            # style_function1 =lambda feature: {
-            #     "fillColor": "#000000",
-            #     "color": "black ",
-            #     "weight": 2,
-            #     "dashArray": "5, 5",
-            # }
-            # style_function2 =lambda feature: {
-            #     "fillColor": "orange",
-            #     "color": "black ",
-            #     "weight": 2,
-            #     "dashArray": "5, 5",
-            # }
-            # Add the GeoJSON layer to the map  #########  , style_function=style_function
-#######################
-            # g2 = folium.GeoJson(geojson_data2, name="geojson2", style_function= style_function2 if option_pc.replace(" ","").lower() == geojson_data['features'][0]['properties']['pc_name'].replace(" ","").lower() else style_function1).add_to(m2)
-#######################
-            # print(geojson_data["features"][0])
-            g2 = folium.GeoJson(geojson_data2, name="geojson2", style_function = style_functions).add_to(m2)
-            # m2.add_child(folium.LatLngPopup())
-
-            # # Add layer control to toggle GeoJSON visibility
-            # folium.LayerControl().add_to(m)
-
-            # Save the map to an HTML file
-            # m.save('map_with_geojson.html')
-
-            folium.GeoJsonTooltip(fields=["pc_name"]).add_to(g2)
-            st_data2 = st_folium(m2, width=200, height=240, key="map2")
-            
-            
-            
+                folium.GeoJsonTooltip(fields=["pc_name"]).add_to(g2)
+                st_data2 = st_folium(m2, width=200, height=240, key="map2")
+                st.markdown(""" <p id="pc_caption">Constituency in red is the selected Constituency.</p> """, unsafe_allow_html=True)
+            with col6:
+                st.subheader("2019 Stats")
+                df_2019_data = pd.read_csv('2019_Results_Winning_Candidate.csv',  encoding='ISO-8859-1')
+                for data in (df_2019_data["Constituency"].tolist()):
+                    if data.replace(" ","").lower() in option_pc.replace(" ","").lower():
+                        st.dataframe(df_2019_data.loc[df_2019_data["Constituency"] == data].T.reset_index(), hide_index=True)
+                        
 except Exception as Argument:
     st.title("Some Unexpected Error Occured")
     print(Argument)
